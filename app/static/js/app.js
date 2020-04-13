@@ -33,7 +33,17 @@ Vue.component('app-footer', {
 
 const upload_form=Vue.component('upload-form',{
     template:`
+    <div>
         <form @submit.prevent="uploadPhoto" enctype="multipart/form-data" id="uploadForm">
+            <div class="alert alert-success" role="alert" v-if="on && success" v-for="message in messages">
+                {{message}}
+            </div>
+            <div class="alert alert-danger" role="alert"  v-if="on && !success" >
+                <div v-for="message in messages">
+                    <li> {{message}}</li>
+
+                </div>
+            </div>
             <div class="form-group">
                 <label for="description">Description</label>
                 <textarea class="form-control" name="description" id="description" placeholder="Enter description here"></textarea>
@@ -44,6 +54,7 @@ const upload_form=Vue.component('upload-form',{
             </div>
              <button type=submit class="btn btn-primary" > Submit </button>
         </form>
+    </div>
     `,
     methods: {
         uploadPhoto: function(){
@@ -64,11 +75,38 @@ const upload_form=Vue.component('upload-form',{
                 })
                 .then(function (jsonResponse) {
                 // display a success message
-                console.log(jsonResponse); 
+                //undefined - no erros
+                console.log(jsonResponse.errors)
+                if(jsonResponse.errors!=undefined){
+                    console.log(jsonResponse)
+                    nextjson=jsonResponse.errors.replace("['", "");
+                    nextjson=nextjson.replace("']", "");
+                    nextjson=nextjson.replace("'", "");
+                    nextjson=nextjson.replace("'E", "E");
+                    self.messages=nextjson.split(",")
+                    self.on=true;
+                    self.success=false;
+                }else{
+                    console.log(jsonResponse)
+                    self.messages=[jsonResponse.message];
+                    self.on=true;
+                    self.success=true;
+                }
+              
+
                 })
                 .catch(function (error) {
                 console.log(error);
                 });
+        }
+    },
+    data: function(){
+        return {
+            
+                on: false,
+                success: false,
+                messages: []
+            
         }
     }
 })
