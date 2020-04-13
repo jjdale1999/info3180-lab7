@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired
 
 from wtforms import PasswordField
 from wtforms.validators import InputRequired
-class CreateProfile(FlaskForm):
+class UploadForm(FlaskForm):
     description = TextAreaField('Description',validators=[DataRequired()])
     photo = FileField('Photo',validators=[FileRequired(),FileAllowed(['jpg','jpeg','png','Images Only'])])
 
